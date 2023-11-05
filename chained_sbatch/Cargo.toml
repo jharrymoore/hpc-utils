@@ -11,4 +11,4 @@ clap = { version = "4.4.7", features = ["derive"] }
 
 [[bin]]
 path = "src/main.rs"
-name = "chbatch"
+name = "schain"

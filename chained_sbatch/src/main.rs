@@ -1,4 +1,23 @@
-use clap::Parser;
+use std::fmt::{Display, Formatter};
+
+use clap::{Parser, ValueEnum};
+
+#[derive(ValueEnum, Clone, Debug)]
+enum Dependency {
+    AfterOK,
+    AfterNotOK,
+    AfterAll,
+}
+
+impl Display for Dependency {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Dependency::AfterOK => write!(f, "afterok"),
+            Dependency::AfterNotOK => write!(f, "afternotok"),
+            Dependency::AfterAll => write!(f, "afterany"),
+        }
+    }
+}
 
 #[derive(Parser)]
 struct Args {
@@ -6,6 +25,9 @@ struct Args {
     file: String,
     #[clap(short, long)]
     iters: usize,
+    // options are afterok, afternotok, afterany
+    #[clap(value_enum, default_value_t=Dependency::AfterOK, long)]
+    dep: Dependency,
 }
 fn main() {
     let args = Args::parse();
@@ -35,7 +57,7 @@ fn main() {
         println!("Submitting iter {}", idx);
 
         let result = std::process::Command::new("sbatch")
-            .arg(format!("--dependency=afterok:{}", job_id.trim_start()))
+            .arg(format!("--dependency={}:{}", args.dep, job_id.trim_start()))
             .arg(&args.file)
             .output();
 
