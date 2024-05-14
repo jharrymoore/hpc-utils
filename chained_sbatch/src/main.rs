@@ -42,7 +42,7 @@ fn main() {
             .unwrap()
             .split_whitespace()
             .nth(3)
-            .unwrap()
+            .expect("Failed to submit the job script")
             .to_string(),
         Err(e) => {
             println!("Error: {}", e);
